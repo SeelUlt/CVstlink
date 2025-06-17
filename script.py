@@ -160,4 +160,4 @@ def createDirectories():
 #                 shutil.copy(entry.path, 'greenTest/positives')
 # shutil.copy('greenTest/perfects/1234/positive107.jpeg', 'greenTest/positives')
 
-renamer_with_counter("greenTest/negatives", "negative", "jpeg")
+# renamer_with_counter("greenTest/negatives", "negative", "jpeg")

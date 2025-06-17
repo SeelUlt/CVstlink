@@ -21,4 +21,4 @@ def generate_bg_list(folder, output_file):
     print(f"✅ Создан файл: {output_file}")
 
 # Пример использования
-generate_bg_list("negatives", "bg.txt")
+generate_bg_list("augmented_negatives", "bg2.txt")

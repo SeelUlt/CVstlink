@@ -110,4 +110,4 @@ def augment_folder(input_dir, output_dir="augmented_positives", count=5):
 
 
 if __name__ == "__main__":
-    augment_folder("greenTest/positives", "greenTest/augmented_positives", count=5)
+    augment_folder("greenTest/negatives", "augmented_negatives", count=5)
