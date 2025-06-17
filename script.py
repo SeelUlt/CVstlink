@@ -1,8 +1,16 @@
 
-
 import cv2
 import numpy as np
+import os
+import shutil
+from fileCounter import testfull
+from fileCounter import testkey
+from fileCounter import renamer
+from fileCounter import renamer_with_counter
+import grbl
 from matplotlib import pyplot as plt
+from grbl import streamCode
+
 focus = 0.25
 fixedFocus = False
 
@@ -95,12 +103,61 @@ def makePhotoCollection(number, numberOfCamera):
             makePhoto(i, numberOfCamera, focusValue)
             if not fixedFocus:
                 focusValue += 0.25
+
+def blurFace(img):
+    (h, w) = img.shape[:2]
+    dW = int(w / 3)
+    dH = int(h / 3)
+    if dW % 2 == 0:
+        dW -= 1
+    if dH % 2 == 0:
+        dH -= 1
+    return cv2.GaussianBlur(img, (dW, dH), 0)
+
 def camView():
-    return 0
+    cam = cv2.VideoCapture(0)
+    face_cascade = cv2.CascadeClassifier('haarXML/haarcascade_frontalface_default.xml')
+    while True:
+        ret, img = cam.read()
+        faces = face_cascade.detectMultiScale(img, scaleFactor=2, minNeighbors= 5, minSize = (20,20))
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x,y), (x+w, y+h), (0,255,0), 2)
+            img[y:y+h, x:x+w] = blurFace(img[y:y+h, x:x+w])
+        cv2.imshow("window", img)
+        k = cv2.waitKey(10) & 0xFF
+        if k == 27:
+            break
+    cam.release()
+    cv2.destroyAllWindows()
 
-#stitcherella('parts/IMG_1221.jpeg', 'parts/IMG_1222.jpeg')
-#stitcherella('parts/test1.jpeg', 'parts/test2.jpeg')
-#anotherStitcherella('parts/IMG_1221.jpeg', 'parts/IMG_1222.jpeg')
-makePhotoCollection(1, 0)
-#stitcherella('parts/1.jpeg', 'parts/2.jpeg')
+def createDirectories():
+    counter = 1238
+    end = 1251
+    while counter < end:
+        os.makedirs(f"greenTest/perfects/{counter}", exist_ok=True)
+        counter+=1
 
+#streamCode("COM1", "/gcode/test0.gcode")
+#camView()
+#createDirectories()
+
+# i = testkey('greenTest/perfects', 'IMG')
+# j = testkey('greenTest/perfects', '.jpeg')
+# print(j-i)
+
+#renamer('greentest/perfects/1244', 'IMG', 'копия')
+# camView()
+#
+# # Путь к директории
+# basepath = 'greenTest/perfects'
+# directories = os.listdir(basepath)
+#
+# for folder in directories:
+#     folderpath = os.path.join(basepath, folder)
+#     if os.path.isdir(folderpath):
+#         for entry in os.scandir(folderpath):
+#             if 'positive' in entry.name:
+#                 shutil.copy(entry.path, 'greenTest/positives')
+# shutil.copy('greenTest/perfects/1234/positive107.jpeg', 'greenTest/positives')
+
+renamer_with_counter("greenTest/negatives", "negative", "jpeg")
